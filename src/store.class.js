@@ -39,8 +39,7 @@ class Store {
     }
 
     getProductsByCategory(id) {
-        let productos = this.products.filter(product => product.category === id);
-        return productos;
+        return this.products.filter(product => product.category === id);
     }
 
     addCategory(nombre, descripcion) {
@@ -87,8 +86,7 @@ class Store {
         if (this.getProductsByCategory(id).length) {
             throw "Error! La categoría tiene productos";
         }
-        let categoria = this.categories.pop(id);
-        return categoria;
+        return this.categories.pop(id);
     }
 
     delProduct(id) {
@@ -96,8 +94,7 @@ class Store {
         if (producto.units > 0) {
             throw "Error! El producto contiene unidades";
         }
-        this.products.pop(producto);
-        return producto;
+        return this.products.pop(producto);
     }
 
     totalImport() {

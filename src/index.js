@@ -12,7 +12,6 @@ try {
     console.error(err)
 }
 
-
 try {
     var tv = myStore.addProduct({ 
         name: 'TV Samsung MP45', 
