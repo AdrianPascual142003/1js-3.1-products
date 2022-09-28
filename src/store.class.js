@@ -2,6 +2,7 @@
 
 const Category = require('./category.class');
 const Product = require('./product.class');
+const data = require('./datosIni.json');
 
 // Aquí la clase Store
 
@@ -12,6 +13,11 @@ class Store {
         this.name = name;
         this.products = [];
         this.categories = []; 
+    }
+
+    loadData() {
+        data.categories.forEach(category => this.categories.push(new Category(category.id,category.name,category.description)));
+        data.products.forEach(product => this.products.push(new Product(product.id,product.name,product.category,product.price,product.units)));
     }
 
     getCategoryById(id){
@@ -82,11 +88,13 @@ class Store {
     }
 
     delCategory(id) {
-        this.getCategoryById(id);
+        let category = this.getCategoryById(id);
         if (this.getProductsByCategory(id).length) {
             throw "Error! La categoría tiene productos";
         }
-        return this.categories.pop(id);
+        let categoryIndex = this.categories.findIndex(category => category.id === id);
+        this.categories.splice(categoryIndex,1);
+        return category;
     }
 
     delProduct(id) {
@@ -94,7 +102,9 @@ class Store {
         if (producto.units > 0) {
             throw "Error! El producto contiene unidades";
         }
-        return this.products.pop(producto);
+        let productIndex = this.products.findIndex(producto => producto.id === id);
+        this.products.splice(productIndex,1);
+        return producto;
     }
 
     totalImport() {

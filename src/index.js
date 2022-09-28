@@ -4,6 +4,7 @@
 // Antes hemos haber importado la clase Store para poder usarla
 const Store = require('./store.class');
 const myStore = new Store(1, 'Almacén de ACME')
+myStore.loadData();
 
 // Añadimos los objetos
 try {
