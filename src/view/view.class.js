@@ -34,6 +34,9 @@ class View {
         `
         messageUI.appendChild(alerta);
         
+        setTimeout(() => {
+            alerta.remove();
+        }, 3000);
     }
 
     setCategoryList(categories) {
