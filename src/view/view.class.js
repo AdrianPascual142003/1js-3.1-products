@@ -43,17 +43,21 @@ class View {
             newOption.label = category.name;
             newOption.id = "cat-" + category.id;
             newOption.value = category.id;
-            categoryList.add(newOption);
+            categoryList.add(this.mapCategory(category));
         });
     }
 
     addCategoryToCategoryList(category) {
         const categoryList = document.getElementById("newprod-category");
+        categoryList.add(this.mapCategory(category));
+    }
+
+    mapCategory(category) {
         let newOption = document.createElement("option");
         newOption.label = category.name;
         newOption.id = "cat-" + category.id;
         newOption.value = category.id;
-        categoryList.add(newOption);
+        return newOption;
     }
 
     updateProductImport(totalImport) {
