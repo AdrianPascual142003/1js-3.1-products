@@ -67,6 +67,9 @@ class Store {
     }
 
     addProduct(payload) {
+        payload.units = Number(payload.units);
+        payload.category = Number(payload.category);
+        payload.price = Number(payload.price);
         if (!payload.name) {
             throw "Error! El objeto ha de tener un nombre";
         }
@@ -88,23 +91,23 @@ class Store {
     }
 
     delCategory(id) {
+        id = Number(id);
         let category = this.getCategoryById(id);
         if (this.getProductsByCategory(id).length) {
             throw "Error! La categoría tiene productos";
         }
         let categoryIndex = this.categories.findIndex(category => category.id === id);
-        this.categories.splice(categoryIndex,1);
-        return category;
+        return this.categories.splice(categoryIndex,1)[0];
     }
 
     delProduct(id) {
+        id = Number(id)
         let producto = this.getProductById(id);
         if (producto.units > 0) {
             throw "Error! El producto contiene unidades";
         }
         let productIndex = this.products.findIndex(producto => producto.id === id);
-        this.products.splice(productIndex,1);
-        return producto;
+        return this.products.splice(productIndex,1)[0];
     }
 
     totalImport() {
