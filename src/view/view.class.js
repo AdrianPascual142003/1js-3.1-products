@@ -10,12 +10,34 @@ class View {
             <td>${product.category}</td>
             <td>${product.units}</td>
             <td>${product.price} €/u</td>
-            <td>${product.productImport()}</td>
-            <td></td>
-        `
-
+            <td>${product.productImport().toFixed(2)}</td>
+            <td>
+            <button class="btn btn-secondary" id="morequantity-${product.id}" value="morequantity-${product.id}">
+                <span class="material-icons">expand_less</span>
+            </button>
+            <button class="btn btn-secondary" id="lessquantity-${product.id}" value="lessquantity-${product.id}">
+                <span class="material-icons">expand_more</span>
+            </button>
+            <button class="btn btn-secondary" id="delprod-${product.id}" value="delprod-${product.id}">
+                <span class="material-icons">delete</span>
+            </button>
+            <button class="btn btn-secondary" id="edit-${product.id}" value="edit-${product.id}">
+                <span class="material-icons">edit</span>
+            </button>
+            </td>
+        `;
     const tbodyUI = document.querySelector('#almacen tbody');
     tbodyUI.appendChild(productUI);
+    }
+
+    editProductForm(product) {
+        const addProductUI = document.getElementById('tablaProd').textContent = "Modificar Producto";
+        document.getElementById('newprod-id').value = product.id;
+        document.getElementById('newprod-name').value = product.name;
+        document.getElementById('newprod-category').value = product.category;
+        document.getElementById('newprod-units').value = product.units;
+        document.getElementById('newprod-price').value = product.price;
+        document.getElementById('botonProd').innerHTML = "Cambiar";
     }
 
     removeProduct(product) {
@@ -65,7 +87,7 @@ class View {
 
     updateProductImport(totalImport) {
         const totalImportUI = document.getElementById('total-import')
-        totalImportUI.innerHTML = totalImport;
+        totalImportUI.innerHTML = totalImport.toFixed(2);
     }
 
     setProductList(products) {
@@ -78,6 +100,17 @@ class View {
         const categoryOption = document.getElementById("cat-" + category.id);
         categoryOption.remove();
     }
+
+    renderEditProduct(product) {
+        const productTr = document.getElementById('product-' + product.id);
+        productTr.children[1].innerHTML = product.name;
+        productTr.children[2].innerHTML = product.category;
+        productTr.children[3].innerHTML = product.units;
+        productTr.children[4].innerHTML = product.price + " €/u";
+        productTr.children[5].innerHTML = product.productImport().toFixed(2);
+    }
+
+
 
 }
 

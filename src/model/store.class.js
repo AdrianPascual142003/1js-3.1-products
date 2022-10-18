@@ -90,6 +90,34 @@ class Store {
         return productoNuevo;
     }
 
+    editProduct(payload) {
+        payload.id = Number(payload.id);
+        payload.units = Number(payload.units);
+        payload.category = Number(payload.category);
+        payload.price = Number(payload.price);
+        if (!payload.name) {
+            throw "Error! El objeto ha de tener un nombre";
+        }
+        if (!payload.category) {
+            throw "Error! El producto no tiene una categoria o no existe";
+        }
+        if (!payload.price || payload.price < 0 || isNaN(payload.price)) {
+            throw "Error! El producto no tiene precio o este es negativo";
+        }
+        if (payload.units) {
+            if (!Number.isInteger(payload.units) || payload.units < 0) {
+                throw "Error! Las unidades no pueden ser negativas";
+            }
+        }
+        this.getCategoryById(payload.category);
+        let productoEditado = this.getProductById(payload.id);
+        productoEditado.name = payload.name;
+        productoEditado.units = payload.units;
+        productoEditado.category = payload.category;
+        productoEditado.price = payload.price;
+        return productoEditado;
+    }
+
     delCategory(id) {
         id = Number(id);
         let category = this.getCategoryById(id);

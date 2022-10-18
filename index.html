@@ -8,6 +8,7 @@
 	<meta name="keywords" content="JavaScript, Ejercicio, HTML5, DAW">
 	<!-- CSS only -->
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
 </head>
 <body>
@@ -17,7 +18,7 @@
 		  <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
 			<div class="navbar-nav">
 			  <a class="nav-link active" aria-current="page" href="#">Productos</a>
-			  <a class="nav-link" href="#">Categorías</a>
+			  <a id="showCategoryList" class="nav-link" href="#">Categorías</a>
 			  <a class="nav-link" href="#">Añadir producto</a>
 			  <a class="nav-link" href="#">Añadir categoría</a>
 			  <a class="nav-link" href="#">Sobre nosotros</a>
@@ -69,7 +70,7 @@
 					<div class="col-sm-6 col-md-4 col-lg-4">
 						<form id="new-prod">
 							<fieldset>
-								<legend class="bg-dark text-white text-center">Añadir producto</legend>
+								<legend class="bg-dark text-white text-center" id="tablaProd">Añadir producto</legend>
 								<!-- Aquí los inputs y botones del form -->
 								<div class="form-group">
 									<label for="newprod-id">ID:</label>
@@ -80,7 +81,7 @@
 									<input type="text" id="newprod-name" class="form-control">
 								</div>
 								<div class="form-group">
-									<label for="newprod-cat">Categoría:</label>
+									<label for="newprod-category">Categoría:</label>
 									<select class="form-control" id="newprod-category">
 										<option value="">--- Selecciona categoría ---</option>
 										</select>
@@ -92,10 +93,10 @@
 								</div>
 								<div class="form-group">
 									<label for="newprod-price">Precio/u.:</label>
-									<input type="number" id="newprod-price" class="form-control">
+									<input type="number" step="any" id="newprod-price" class="form-control">
 								</div>
 								<br>
-								<button type="submit" class="btn btn-default btn-dark">Añadir</button>
+								<button type="submit" class="btn btn-default btn-dark" id="botonProd">Añadir</button>
 								<button type="reset" class="btn btn-danger">Reset</button>
 							</fieldset>
 						</form>
