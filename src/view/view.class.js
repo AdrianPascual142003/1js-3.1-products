@@ -8,7 +8,7 @@ class View {
         })
         document.getElementById('showCategoryList').addEventListener('click', (event) => {
             event.preventDefault();
-            this.showById();
+            this.showById('category-list');
         })
         document.getElementById('showAddProduct').addEventListener('click', (event) => {
             event.preventDefault();
@@ -137,14 +137,25 @@ class View {
         document.getElementById('almacen').classList.add('oculto');
         document.getElementById('new-prod').classList.add('oculto');
         document.getElementById('add-category').classList.add('oculto');
-        document.getElementById('del-prod').classList.add('oculto');
-        document.getElementById('del-category').classList.add('oculto');
+        document.getElementById('category-list').classList.add('oculto');
         document.getElementById('sobre-nosotros').classList.add('oculto');
     }
 
     showById(id) {
         this.hideAll();
         document.getElementById(`${id}`).classList.remove('oculto');
+    }
+
+    renderCategory(category) {
+        const categoryUI = document.createElement('tr');
+        categoryUI.id = category.id;
+        categoryUI.innerHTML = `
+        <td>${category.id}</td>
+        <td>${category.name}</td>
+        `;
+        const tcategoryUI = document.getElementById('categories');
+        tcategoryUI.appendChild(categoryUI);
+
     }
 
 }

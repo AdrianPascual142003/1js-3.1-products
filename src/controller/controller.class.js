@@ -12,6 +12,7 @@ class Controller {
         this.store.loadData();
         this.view.setCategoryList(this.store.categories);
         this.view.setProductList(this.store.products);
+        this.addCategoryToList(this.store.categories);
         this.addEventLists(this.store.products);
         this.updateProductImport();
         this.view.showById('almacen');
@@ -46,6 +47,7 @@ class Controller {
     addCategoryToStore(formData) {
         try {
             const category = this.store.addCategory(formData.name,formData.description);
+            this.view.renderCategory(category);
             this.view.addCategoryToCategoryList(category);
         } catch (err) {
             this.view.renderMessage(err);
@@ -103,9 +105,19 @@ class Controller {
             }
             this.editProduct(product); 
         })
+        document.getElementById('botonProd').addEventListener('click' , () => {
+            this.view.showById('almacen');
+        })
+        document.getElementById('botonCategory').addEventListener('click' , () => {
+            this.view.showById('category-list');
+        })
     }
 
-    
+    addCategoryToList(categories) {
+        categories.forEach(category => {
+            this.view.renderCategory(category);
+        })
+    }
 
 }
 
