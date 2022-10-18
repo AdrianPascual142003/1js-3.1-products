@@ -62,7 +62,8 @@ window.addEventListener('load', () => {
   })
 
   // función manejadora del formulario 'del-prodcut'
-  document.getElementById('del-prod').addEventListener('submit', (event) => {
+
+  /*document.getElementById('del-prod').addEventListener('submit', (event) => {
     event.preventDefault()
 
     const id = document.getElementById('delprod-id').value;
@@ -79,4 +80,6 @@ window.addEventListener('load', () => {
     myController.delCategoryFromStore(id);
 
   })
+  */
+
 })

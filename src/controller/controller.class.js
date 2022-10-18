@@ -8,11 +8,13 @@ class Controller {
     }
 
     init() {
+        this.view.init();
         this.store.loadData();
         this.view.setCategoryList(this.store.categories);
         this.view.setProductList(this.store.products);
         this.addEventLists(this.store.products);
         this.updateProductImport();
+        this.view.showById('almacen');
     }
 
     addProductToStore(formData) {
@@ -79,6 +81,7 @@ class Controller {
             this.delProductFromStore(product.id);
         })
         document.getElementById('edit-' + product.id).addEventListener('click', () => {
+            this.view.showById('new-prod')
             this.view.editProductForm(product);
         });
         const botonBajar = document.getElementById('lessquantity-' + product.id)
