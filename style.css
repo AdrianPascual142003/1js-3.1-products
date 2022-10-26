@@ -9,3 +9,7 @@
 input:invalid {
     border: 1px solid red;
 }
+
+select:invalid {
+    border: 1px solid red;
+}
