@@ -14,6 +14,8 @@ class Controller {
         this.view.setProductList(this.store.products);
         this.addCategoryToList(this.store.categories);
         this.addEventLists(this.store.products);
+        this.getValuesFromForm()
+        this.setListeners();
         this.updateProductImport();
         this.view.showById('almacen');
     }
@@ -46,7 +48,7 @@ class Controller {
 
     addCategoryToStore(formData) {
         try {
-            const category = this.store.addCategory(formData.name,formData.description);
+            const category = this.store.addCategory(formData.name, formData.description);
             this.view.renderCategory(category);
             this.view.addCategoryToCategoryList(category);
         } catch (err) {
@@ -79,7 +81,7 @@ class Controller {
     }
 
     addEventList(product) {
-        document.getElementById('delprod-' + product.id).addEventListener('click',() => {
+        document.getElementById('delprod-' + product.id).addEventListener('click', () => {
             this.delProductFromStore(product.id);
         })
         document.getElementById('edit-' + product.id).addEventListener('click', () => {
@@ -88,28 +90,22 @@ class Controller {
         });
         const botonBajar = document.getElementById('lessquantity-' + product.id)
         product.units === 0 ? botonBajar.disabled = true : botonBajar.disabled = false;
-        botonBajar.addEventListener('click',() => {
+        botonBajar.addEventListener('click', () => {
             if (product.units > 0) {
                 product.units -= 1;
-                this.editProduct(product); 
+                this.editProduct(product);
             }
-           if (product.units == 0) {
-            botonBajar.disabled = true;
-           }
+            if (product.units == 0) {
+                botonBajar.disabled = true;
+            }
         })
         const botonSubir = document.getElementById('morequantity-' + product.id)
-        botonSubir.addEventListener('click',() => {
+        botonSubir.addEventListener('click', () => {
             product.units += 1;
             if (product.units > 0) {
                 botonBajar.disabled = false;
             }
-            this.editProduct(product); 
-        })
-        document.getElementById('botonProd').addEventListener('click' , () => {
-            this.view.showById('almacen');
-        })
-        document.getElementById('botonCategory').addEventListener('click' , () => {
-            this.view.showById('category-list');
+            this.editProduct(product);
         })
     }
 
@@ -119,6 +115,69 @@ class Controller {
         })
     }
 
+
+    getValuesFromForm() {
+        window.addEventListener('load', () => {
+            document.getElementById('new-prod').addEventListener('submit', (event) => {
+                event.preventDefault();
+                this.setListeners();
+                if (document.getElementById('new-prod').checkValidity()) {
+                    const id = document.getElementById('newprod-id').value
+                    const name = document.getElementById('newprod-name').value
+                    const category = document.getElementById('newprod-category').value
+                    const units = document.getElementById('newprod-units').value
+                    const price = document.getElementById('newprod-price').value
+                    if (!id) {
+                        this.addProductToStore({ name, category, units, price });
+                    } else {
+                        this.editProduct({ id, name, category, units, price })
+                    }
+                    this.view.showById('almacen')
+                }else {
+                    this.setErrorMessage('newprod-name');
+                    this.setErrorMessage('newprod-category');
+                    this.setErrorMessage('newprod-units');
+                    this.setErrorMessage('newprod-price');
+                }
+            })
+            document.getElementById('add-category').addEventListener('submit', (event) => {
+                event.preventDefault()
+                const id = document.getElementById('newcategory-id').value
+                const name = document.getElementById('newcategory-name').value
+                const description = document.getElementById('newcategory-description').value
+                this.addCategoryToStore({ id, name, description })
+                this.view.showById('category-list');
+            })
+
+            //document.getElementById('newprod-id').addEventListener('blur', this.editProduct())
+        })
+    }
+
+    setListener(idInput) {
+        const input = document.getElementById(idInput)
+        input.addEventListener('blur', () => {
+            input.nextElementSibling.textContent = input.validationMessage;
+        })
+    }
+
+    setErrorMessage(idInput) {
+        const input = document.getElementById(idInput)
+        input.nextElementSibling.textContent = input.validationMessage;
+    }
+
+    setListeners() {
+        const inputName = document.getElementById("newprod-name")
+        inputName.addEventListener('blur', () => {
+            inputName.setCustomValidity('');
+            if (this.store.productNameExists(document.getElementById("newprod-id"), inputName.value)) {
+                inputName.setCustomValidity('El producto ya existe');
+            }
+            inputName.nextElementSibling.textContent = inputName.validationMessage;
+        })
+        this.setListener('newprod-category');
+        this.setListener('newprod-units');
+        this.setListener('newprod-price');
+    }
 }
 
-module.exports=Controller;
+module.exports = Controller;

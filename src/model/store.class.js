@@ -15,6 +15,13 @@ class Store {
         this.categories = []; 
     }
 
+    productNameExists(id,name) {
+        name = name.toLocaleLowerCase();
+        if (this.products.find(product => product.id != id &&  product.name.toLocaleLowerCase() === name)) {
+            return true;
+        }
+    }
+
     loadData() {
         data.categories.forEach(category => this.categories.push(new Category(category.id,category.name,category.description)));
         data.products.forEach(product => this.products.push(new Product(product.id,product.name,product.category,product.price,product.units)));
