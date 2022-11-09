@@ -7,9 +7,9 @@ class Controller {
         this.view = new View();
     }
 
-    init() {
+   async init() {
         this.view.init();
-        this.store.loadData();
+        await this.store.loadData();
         this.view.setCategoryList(this.store.categories);
         this.view.setProductList(this.store.products);
         this.addCategoryToList(this.store.categories);
@@ -20,9 +20,9 @@ class Controller {
         this.view.showById('almacen');
     }
 
-    addProductToStore(formData) {
+    async addProductToStore(formData) {
         try {
-            const product = this.store.addProduct(formData);
+            const product = await this.store.addProduct(formData);
             this.view.renderProduct(product);
             this.addEventList(product);
             this.updateProductImport();
@@ -31,9 +31,9 @@ class Controller {
         }
     }
 
-    editProduct(product) {
+    async editProduct(product) {
         try {
-            const productEdit = this.store.editProduct(product);
+            const productEdit = await this.store.editProduct(product);
             this.view.renderEditProduct(productEdit);
             this.updateProductImport();
         } catch (err) {
@@ -46,9 +46,9 @@ class Controller {
         this.view.updateProductImport(totalImport);
     }
 
-    addCategoryToStore(formData) {
+    async addCategoryToStore(formData) {
         try {
-            const category = this.store.addCategory(formData.name, formData.description);
+            const category = await this.store.addCategory(formData.name, formData.description);
             this.view.renderCategory(category);
             this.view.addCategoryToCategoryList(category);
         } catch (err) {
@@ -56,18 +56,18 @@ class Controller {
         }
     }
 
-    delProductFromStore(id) {
+    async delProductFromStore(id) {
         try {
-            const product = this.store.delProduct(id);
+            const product = await this.store.delProduct(id);
             this.view.removeProduct(product);
         } catch (err) {
             this.view.renderMessage(err);
         }
     }
 
-    delCategoryFromStore(id) {
+    async delCategoryFromStore(id) {
         try {
-            const category = this.store.delCategory(id);
+            const category = await this.store.delCategory(id);
             this.view.removeCategory(category);
         } catch (err) {
             this.view.renderMessage(err);
@@ -117,7 +117,6 @@ class Controller {
 
 
     getValuesFromForm() {
-        window.addEventListener('load', () => {
             document.getElementById('new-prod').addEventListener('submit', (event) => {
                 event.preventDefault();
                 this.setListeners();
@@ -150,7 +149,6 @@ class Controller {
             })
 
             //document.getElementById('newprod-id').addEventListener('blur', this.editProduct())
-        })
     }
 
     setListener(idInput) {

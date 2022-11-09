@@ -2,32 +2,103 @@
 
 const Category = require('./category.class');
 const Product = require('./product.class');
-const data = require('./datosIni.json');
+//const data = require('./datosIni.json');
+
+const SERVER = 'http://localhost:3000';
 
 // Aquí la clase Store
 
 class Store {
 
-    constructor(id,name) {
+    constructor(id, name) {
         this.id = id;
         this.name = name;
         this.products = [];
-        this.categories = []; 
+        this.categories = [];
     }
 
-    productNameExists(id,name) {
+    productNameExists(id, name) {
         name = name.toLocaleLowerCase();
-        if (this.products.find(product => product.id != id &&  product.name.toLocaleLowerCase() === name)) {
+        if (this.products.find(product => product.id != id && product.name.toLocaleLowerCase() === name)) {
             return true;
         }
     }
 
+    /*
     loadData() {
         data.categories.forEach(category => this.categories.push(new Category(category.id,category.name,category.description)));
         data.products.forEach(product => this.products.push(new Product(product.id,product.name,product.category,product.price,product.units)));
     }
+    */
 
-    getCategoryById(id){
+
+    async loadData() {
+        const categories = await this.getTable('categories');
+        categories.forEach(category => this.categories.push(new Category(category.id, category.name, category.description)));
+
+        const products = await this.getTable('products');
+        products.forEach(product => this.products.push(new Product(product.id, product.name, product.category, product.price, product.units)));
+    }
+
+    async getTable(table) {
+        try {
+            var response = await fetch(SERVER + '/' + table)
+        } catch (error) {
+            alert("Error en la conexión del servidor, asegurate de que esta conectado")
+        }
+        if (!response.ok) {
+            throw ("Error " + response.statusText + " en la base de dades");
+        }
+        const objects = await response.json()
+        return objects;
+    }
+
+    async deleteItem(table, item) {
+        try {
+            const response = await fetch(SERVER + '/' + table + '/' + item, {
+                method: 'DELETE'
+            })
+        } catch (error) {
+            throw "Error en la conexión del servidor, asegurate de que esta conectado"
+        }
+    }
+
+
+    async saveItem(table, item) {
+        try {
+            var response = await fetch(SERVER + '/' + table, {
+                method: 'POST',
+                body: JSON.stringify(item),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+        } catch (error) {
+            throw "Error en la conexión del servidor, asegurate de que esta conectado"
+        }
+        if (!response.ok) {
+            throw "Error " + response.status + " de la BBDD: " + response.statusText;
+        }
+        return await response.json();
+    }
+
+    async editProductInDB(product) {
+        try {
+            var response = await fetch(SERVER + '/products/' + product.id, {
+                method: 'PUT',
+                body: JSON.stringify(product),
+                headers: { 'Content-Type': 'application/json' }
+            })
+        } catch (error) {
+            throw "Error en la conexión del servidor, asegurate de que esta conectado"
+        }
+        if (!response.ok) {
+            throw "Error " + response.status + " de la BBDD: " + response.statusText;
+        }
+        return await response.json();
+    }
+
+    getCategoryById(id) {
         let categoria = this.categories.find(category => category.id === id);
         if (!categoria) {
             throw Error("No hay ninguna categoria con el id " + id);
@@ -55,14 +126,19 @@ class Store {
         return this.products.filter(product => product.category === id);
     }
 
-    addCategory(nombre, descripcion) {
+    async addCategory(nombre, descripcion) {
         if (!nombre) {
             throw "Error! Has de introducir un nombre";
         }
         try {
             this.getCategoryByName(nombre);
         } catch {
-            let categoriaNueva = new Category(this.getNextId(this.categories),nombre,descripcion);
+            let payload = {
+                name: nombre,
+                description: descripcion.length ? descripcion : "No hay descripción"
+            }
+            let categoryFromBD = await this.saveItem('categories', payload)
+            let categoriaNueva = new Category(categoryFromBD.id, categoryFromBD.name, categoryFromBD.description.len7);
             this.categories.push(categoriaNueva);
             return categoriaNueva;
         }
@@ -70,10 +146,10 @@ class Store {
     }
 
     getNextId(array) {
-        return array.reduce((max,item) => item.id > max ? item.id : max,0) + 1;
+        return array.reduce((max, item) => item.id > max ? item.id : max, 0) + 1;
     }
 
-    addProduct(payload) {
+    async addProduct(payload) {
         payload.units = Number(payload.units);
         payload.category = Number(payload.category);
         payload.price = Number(payload.price);
@@ -91,13 +167,15 @@ class Store {
                 throw "Error! Las unidades no pueden ser negativas";
             }
         }
+
         this.getCategoryById(payload.category);
-        let productoNuevo = new Product(this.getNextId(this.products),payload.name,payload.category,payload.price,payload.units);
+        let productFromDB = await this.saveItem('products', payload)
+        let productoNuevo = new Product(productFromDB.id, productFromDB.name, productFromDB.category, productFromDB.price, productFromDB.units);
         this.products.push(productoNuevo);
         return productoNuevo;
     }
 
-    editProduct(payload) {
+    async editProduct(payload) {
         payload.id = Number(payload.id);
         payload.units = Number(payload.units);
         payload.category = Number(payload.category);
@@ -117,11 +195,14 @@ class Store {
             }
         }
         this.getCategoryById(payload.category);
-        let productoEditado = this.getProductById(payload.id);
-        productoEditado.name = payload.name;
-        productoEditado.units = payload.units;
-        productoEditado.category = payload.category;
-        productoEditado.price = payload.price;
+
+
+        let productFormBD = await this.editProductInDB(payload)
+        let productoEditado = this.getProductById(productFormBD.id);
+        productoEditado.name = productFormBD.name;
+        productoEditado.units = productFormBD.units;
+        productoEditado.category = productFormBD.category;
+        productoEditado.price = productFormBD.price;
         return productoEditado;
     }
 
@@ -132,21 +213,22 @@ class Store {
             throw "Error! La categoría tiene productos";
         }
         let categoryIndex = this.categories.findIndex(category => category.id === id);
-        return this.categories.splice(categoryIndex,1)[0];
+        return this.categories.splice(categoryIndex, 1)[0];
     }
 
-    delProduct(id) {
+    async delProduct(id) {
         id = Number(id)
         let producto = this.getProductById(id);
         if (producto.units > 0) {
             throw "Error! El producto contiene unidades";
         }
+        await this.deleteItem('products', producto.id);
         let productIndex = this.products.findIndex(producto => producto.id === id);
-        return this.products.splice(productIndex,1)[0];
+        return this.products.splice(productIndex, 1)[0];
     }
 
     totalImport() {
-        return this.products.reduce((total,product) => total += product.productImport(),0);
+        return this.products.reduce((total, product) => total += product.productImport(), 0);
     }
 
     orderByUnitsDesc() {
@@ -154,7 +236,7 @@ class Store {
     }
 
     orderByName() {
-        return this.products.sort((product1,product2) => product1.name.localeCompare(product2.name));
+        return this.products.sort((product1, product2) => product1.name.localeCompare(product2.name));
     }
 
     underStock(units) {
@@ -162,7 +244,7 @@ class Store {
     }
 
     toString() {
-        let cabecera = "Almacen" + this.id + " => " + this.products.length + " productos: " + this.totalImport().toFixed(2) + " €" + "\n"; 
+        let cabecera = "Almacen" + this.id + " => " + this.products.length + " productos: " + this.totalImport().toFixed(2) + " €" + "\n";
         let productos = this.products.map(product => "- " + product + "\n").join('');
         return cabecera + productos;
     }

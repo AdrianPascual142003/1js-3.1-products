@@ -4,7 +4,9 @@
 const Controller = require('./controller/controller.class')
 
 const myController = new Controller()
-myController.init()
+window.addEventListener('load', () => {
+  myController.init()
+})
 
 // A continuación crearemos una función manejadora para cada formulario
 
